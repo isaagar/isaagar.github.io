@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Create local repo structure using apt-ftparchive - I Sagar</title>
+	<meta name="description" content="">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta property="og:image" content="">
+	<link rel="shortcut icon" href="/blog/assets/img/favicon/favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="/blog/assets/img/favicon/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/blog/assets/img/favicon/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/blog/assets/img/favicon/apple-touch-icon-114x114.png">
+	<!-- Chrome, Firefox OS and Opera -->
+	<meta name="theme-color" content="#2d2a2a">
+	<!-- Windows Phone -->
+	<meta name="msapplication-navbutton-color" content="#2d2a2a">
+	<!-- iOS Safari -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="#2d2a2a">
+
+	<link href="https://fonts.googleapis.com/css?family=Finger+Paint|PT+Sans:400,700" rel="stylesheet">
+	<link rel="stylesheet" href="/blog/assets/fonts/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/blog/assets/css/main.css">
+</head>
+
+<body>
+
+  <aside class="sidebar">
+
+  <div class="sidebar-container">
+    <div class="sidebar-logo">
+      <a href="/blog/" class="logo">I Sagar</a>
+    </div>
+
+    <menu class="sidebar-menu">
+      <li class="menu-items"><a class="menu-links" href="/blog/">Home</a></li>
+      <li class="menu-items"><a class="menu-links" href="/blog/about/">About</a></li>
+    </menu>
+
+    <div class="sidebar-social">
+      <li class="social-items"><a href="https://github.com/isaagar" class="social-links"><i class="social-icons fa fa-github" aria-hidden="true"></i></a></li>
+    </div>
+
+  </div>
+</aside>
+
+
+  <main role="main">
+    <div class="content">
+      <article class="page-article">
+  <div class="wrap-content">
+    <header class="page-header">
+      <h1 class="page-title">Create local repo structure using apt-ftparchive</h1>
+      <div class="page-date"><span>2017, Jan 24&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+    </header>
+    <div class="page-content">
+      
+      <p>apt-ftparchive is used for generating index files. I’m mentioning following steps to create index files out of existing pool directory.</p>
+
+<p>Go to the directory in which pool and dists directory are placed. If you want to create dists from scratch again then you should delete the dists.</p>
+
+<p>Lets create directories for dists structure</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ mkdir -p dists/&lt;codename&gt;/main/binary-&lt;arch&gt;
+</code></pre>
+</div>
+
+<h2 id="create-packages-file">Create packages file</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ apt-ftparchive packages pool/dists/main/&lt;codename&gt;/binary-&lt;arch&gt;/Packages
+$ gzip -9 -c Packages &gt; Packages.gz
+</code></pre>
+</div>
+
+<h2 id="create-release-file">Create Release file</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>$ apt-ftparchive release dists/main/&lt; codename &gt;/binary-$arch &gt; dists/main/$codename/binary-$arch/Release
+</code></pre>
+</div>
+
+<p>The above generated Release file contains only checksums.</p>
+
+<p>To add codename,version etc . Create apt.conf like below</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>APT {
+FTPArchive {
+Release {
+Origin “Hamara Sugam”;
+Label “Hamara Sugam”;
+Suite “namaste”;
+Version “2.0”;
+Codename “namaste”;
+Architectures “amd64”;
+Components “main contrib non-free”;
+};
+};
+};
+</code></pre>
+</div>
+
+<p>Now, again generate Release file using apt.conf</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ apt-ftparchive -c apt.conf release dists/namaste &gt; dists/namaste/Release
+</code></pre>
+</div>
+
+<p>Specifying options on command line instead of creating config file</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ apt-ftparchive -o APT::FTPArchive::Release::Origin=”Hamara Sugam” \
+-o APT::FTPArchive::Release::Label=”Hamara Sugam” \
+-o APT::FTPArchive::Release::Suite=”namaste” \
+-o APT::FTPArchive::Release::Version=”2.0″ \
+-o APT::FTPArchive::Release::Codename=”namaste” \
+-o APT::FTPArchive::Release::Architectures=”amd64″ \
+-o APT::FTPArchive::Release::Components=”main contrib non-free” \
+release dists/namaste/ &gt; dists/namaste/Release
+</code></pre>
+</div>
+
+    </div>
+    
+
+  </div>
+</article>
+
+    </div>
+  </main>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

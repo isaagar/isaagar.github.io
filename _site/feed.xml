@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="http://localhost:4000/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/blog/" rel="alternate" type="text/html" /><updated>2018-01-26T12:39:19+05:30</updated><id>http://localhost:4000/blog/</id><title type="html">I Sagar</title><subtitle>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
+</subtitle><entry><title type="html">Create local repo structure using apt-ftparchive</title><link href="http://localhost:4000/blog/create-local-repo-structure-using-apt-ftparchive/" rel="alternate" type="text/html" title="Create local repo structure using apt-ftparchive" /><published>2017-01-24T00:00:00+05:30</published><updated>2017-01-24T00:00:00+05:30</updated><id>http://localhost:4000/blog/create-local-repo-structure-using-apt-ftparchive</id><content type="html" xml:base="http://localhost:4000/blog/create-local-repo-structure-using-apt-ftparchive/">&lt;p&gt;apt-ftparchive is used for generating index files. I’m mentioning following steps to create index files out of existing pool directory.&lt;/p&gt;
+
+&lt;p&gt;Go to the directory in which pool and dists directory are placed. If you want to create dists from scratch again then you should delete the dists.&lt;/p&gt;
+
+&lt;p&gt;Lets create directories for dists structure&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ mkdir -p dists/&amp;lt;codename&amp;gt;/main/binary-&amp;lt;arch&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;create-packages-file&quot;&gt;Create packages file&lt;/h2&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ apt-ftparchive packages pool/dists/main/&amp;lt;codename&amp;gt;/binary-&amp;lt;arch&amp;gt;/Packages
+$ gzip -9 -c Packages &amp;gt; Packages.gz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;create-release-file&quot;&gt;Create Release file&lt;/h2&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ apt-ftparchive release dists/main/&amp;lt; codename &amp;gt;/binary-$arch &amp;gt; dists/main/$codename/binary-$arch/Release
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The above generated Release file contains only checksums.&lt;/p&gt;
+
+&lt;p&gt;To add codename,version etc . Create apt.conf like below&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;APT {
+FTPArchive {
+Release {
+Origin “Hamara Sugam”;
+Label “Hamara Sugam”;
+Suite “namaste”;
+Version “2.0”;
+Codename “namaste”;
+Architectures “amd64”;
+Components “main contrib non-free”;
+};
+};
+};
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now, again generate Release file using apt.conf&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ apt-ftparchive -c apt.conf release dists/namaste &amp;gt; dists/namaste/Release
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Specifying options on command line instead of creating config file&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ apt-ftparchive -o APT::FTPArchive::Release::Origin=”Hamara Sugam” \
+-o APT::FTPArchive::Release::Label=”Hamara Sugam” \
+-o APT::FTPArchive::Release::Suite=”namaste” \
+-o APT::FTPArchive::Release::Version=”2.0″ \
+-o APT::FTPArchive::Release::Codename=”namaste” \
+-o APT::FTPArchive::Release::Architectures=”amd64″ \
+-o APT::FTPArchive::Release::Components=”main contrib non-free” \
+release dists/namaste/ &amp;gt; dists/namaste/Release
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html">apt-ftparchive is used for generating index files. I’m mentioning following steps to create index files out of existing pool directory.</summary></entry></feed>
